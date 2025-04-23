@@ -68,10 +68,11 @@ class Ball:
         pygame.draw.rect(screen, self.color, self.rect)
 
 class Brick:
-    def __init__(self, x, y, color):
+    def __init__(self, x, y, color, points):
         self.rect = pygame.Rect(x, y, BRICK_WIDTH, BRICK_HEIGHT)
         self.color = color
         self.active = True
+        self.points = points
 
     def draw(self):
         if self.active:
@@ -80,11 +81,12 @@ class Brick:
 def create_bricks():
     bricks = []
     for row in range(BRICK_ROWS):
+        points = (BRICK_ROWS - row) * 5  # Points increase from bottom to top
         for col in range(BRICK_COLS):
             x = col * (BRICK_WIDTH + 2) + 1
             y = (row + 2) * (BRICK_HEIGHT + 2) + 1
             color = random.choice(COLORS)
-            bricks.append(Brick(x, y, color))
+            bricks.append(Brick(x, y, color, points))
     return bricks
 
 def main():
@@ -92,19 +94,22 @@ def main():
     ball = Ball()
     bricks = create_bricks()
     game_over = False
-    score = 0  # Score system: 10 points per brick destroyed
+    score = 0
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYDOWN and game_over:
-                if event.key == pygame.K_SPACE:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:  # Quit on 'q'
+                    pygame.quit()
+                    sys.exit()
+                if event.key == pygame.K_SPACE and game_over:
                     game_over = False
                     ball.reset()
                     bricks = create_bricks()
-                    score = 0  # Reset score
+                    score = 0
 
         if not game_over:
             # Move paddle
@@ -130,7 +135,7 @@ def main():
                     brick.active = False
                     ball.dy *= -1
                     ball.color = brick.color
-                    score += 10  # Add points for each brick
+                    score += brick.points  # Add brick's specific points
                     break
 
             # Check if ball is below paddle
@@ -162,4 +167,4 @@ def main():
         clock.tick(FPS)
 
 if __name__ == "__main__":
-    main() 
+    main()
