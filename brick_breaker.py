@@ -92,6 +92,7 @@ def main():
     ball = Ball()
     bricks = create_bricks()
     game_over = False
+    score = 0  # Score system: 10 points per brick destroyed
 
     while True:
         for event in pygame.event.get():
@@ -103,6 +104,7 @@ def main():
                     game_over = False
                     ball.reset()
                     bricks = create_bricks()
+                    score = 0  # Reset score
 
         if not game_over:
             # Move paddle
@@ -128,6 +130,7 @@ def main():
                     brick.active = False
                     ball.dy *= -1
                     ball.color = brick.color
+                    score += 10  # Add points for each brick
                     break
 
             # Check if ball is below paddle
@@ -144,6 +147,11 @@ def main():
         ball.draw()
         for brick in bricks:
             brick.draw()
+
+        # Draw score
+        font = pygame.font.Font(None, 36)
+        score_text = font.render(f"Score: {score}", True, WHITE)
+        screen.blit(score_text, (10, 10))
 
         if game_over:
             font = pygame.font.Font(None, 74)
